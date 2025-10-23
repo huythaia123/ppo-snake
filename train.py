@@ -1,33 +1,32 @@
-# train.py
-import gymnasium as gym
 from stable_baselines3 import PPO
 from stable_baselines3.common.env_checker import check_env
-from stable_baselines3.common.vec_env import DummyVecEnv, VecTransposeImage
-import numpy as np
-
+from stable_baselines3.common.vec_env import SubprocVecEnv
 from snake_env import SnakeEnv
 
 
 def make_env():
-    return SnakeEnv(size=(10, 10), max_steps=300, render_mode=None)
+    def _init():
+        return SnakeEnv(size=(10, 10), max_steps=200)
+
+    return _init
 
 
-# single-process vectorized env
-env = DummyVecEnv([make_env])
+if __name__ == "__main__":
+    check_env(SnakeEnv(size=(10, 10)))
 
-# check env compatibility (will warn if something nonstandard)
-check_env(make_env(), warn=True, skip_render_check=True)
+    env = SubprocVecEnv([make_env() for _ in range(8)])
 
-model = PPO("MlpPolicy", env, verbose=1)
-model.learn(total_timesteps=200_000)
-model.save("ppo_snake")
+    model = PPO(
+        "MlpPolicy",
+        env,
+        verbose=1,
+        learning_rate=3e-4,
+        n_steps=512,
+        ent_coef=0.01,
+        batch_size=64,
+        n_epochs=10,
+    )
 
-# to evaluate / render:
-# env_vis = SnakeEnv(size=(10,10), render_mode="human")
-# obs, _ = env_vis.reset()
-# for _ in range(1000):
-#     action, _ = model.predict(obs, deterministic=True)
-#     obs, rew, done, _, _ = env_vis.step(int(action))
-#     env_vis.render()
-#     if done:
-#         obs, _ = env_vis.reset()
+    model.learn(total_timesteps=300_000)
+    model.save("ppo_snake_v3")
+    env.close()

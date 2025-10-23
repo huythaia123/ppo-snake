@@ -76,7 +76,7 @@ if __name__ == "__main__":
                 if e.type == pygame.QUIT:
                     env.close()
                     raise SystemExit
-
+            total += reward
             time.sleep(0.05)
         print(f"Episode {ep + 1}: reward={total}")
 

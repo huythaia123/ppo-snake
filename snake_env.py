@@ -8,7 +8,7 @@ import pygame
 class SnakeEnv(gym.Env):
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 10}
 
-    def __init__(self, size=(10, 10), max_steps=200, render_mode=None):
+    def __init__(self, size=(20, 20), max_steps=500, render_mode=None):
         super().__init__()
         self.rows, self.cols = size
         self.max_steps = max_steps

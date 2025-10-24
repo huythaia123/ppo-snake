@@ -6,13 +6,13 @@ from snake_env import SnakeEnv
 
 def make_env():
     def _init():
-        return SnakeEnv(size=(10, 10), max_steps=200)
+        return SnakeEnv(size=(20, 20), max_steps=500)
 
     return _init
 
 
 if __name__ == "__main__":
-    check_env(SnakeEnv(size=(10, 10)))
+    check_env(SnakeEnv(size=(20, 20)))
 
     env = SubprocVecEnv([make_env() for _ in range(8)])
 
